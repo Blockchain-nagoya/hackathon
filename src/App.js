@@ -27,16 +27,15 @@ class App extends Component {
 
     //dapi
     client.registerClient({});
-    const provider = await client.api.provider.getProvider();
+    //const provider = await client.api.provider.getProvider();
     const account = await client.api.asset.getAccount();
-    console.log(provider);
+    const balance = await client.api.network.getBalance({address: account});
+    //console.log(provider);
     console.log(account);
-  }
+    console.log(balance);
 
-  priv_key = async() => {
     
   }
-
 
   createAccount = async() => {
     const { password } = this.state;
@@ -49,9 +48,10 @@ class App extends Component {
     const privateKey = Crypto.PrivateKey.random(keyType, keyParameters);
 
     const account = await Account.create( privateKey, password, name );
+
     wallet.addAccount(account);
-    console.log(account);
-    
+
+    console.log(account);    
 
     this.setState({
       privateKey,
