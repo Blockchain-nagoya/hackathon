@@ -5,7 +5,7 @@ import { client } from 'ontology-dapi';
 
 import {
   Crypto, Account, Identity, OntidContract, TransactionBuilder,
-  RestClient, CONST, Wallet
+  RestClient, CONST, Wallet, Utils
 } from 'ontology-ts-sdk';
 
 import UserTop from './Components/UserTop';
@@ -33,8 +33,18 @@ class App extends Component {
     */
 
     //SDK account
-    let wallet = Wallet.create('my_wallet');
     const address = await client.api.asset.getAccount();
+    const provider = await client.api.provider.getProvider();
+    console.log('onGetProvider: ' + JSON.stringify(provider));
+
+    const URL = 'http://polaris1.ont.io:20334';
+    const contractHash = 'f4c029de0779ca64e53646dfb5d3fe1771881d96';
+    const restClient = new RestClient(URL);
+    const res = await restClient.getContract(contractHash);
+    console.log(JSON.stringify(res));
+
+
+    let wallet = Wallet.create('my_wallet');
     const password = "aaa";
     const privateKey = Crypto.PrivateKey.deserializeWIF('L3y6G87B4bURtBC5d8yNd3pquaPzH2ATKmTMJruhncQBVBg6qZjj');  //WIF
     const account = Account.create(privateKey, password);
@@ -42,6 +52,7 @@ class App extends Component {
     console.log(account);
     console.log(privateKey);
     console.log('password:' + password);
+
   
     this.setState({
       account, privateKey, password, address, wallet
@@ -61,6 +72,7 @@ class App extends Component {
   generatedid = async() => {
     const label = 'name';
     const privateKey = Crypto.PrivateKey.random();
+    console.log(privateKey);
     const password = 'bbb';
 
     let identity = Identity.create(privateKey, password, label);
@@ -95,7 +107,7 @@ class App extends Component {
 
   get = async() => {
     const { did } = this.state;
-    const tx = OntidContract.buildGetDDOTx(did);
+    const tx = await OntidContract.buildGetDDOTx(did);
     console.log(tx);
   }
 
