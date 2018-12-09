@@ -85,6 +85,7 @@ class InputPage extends Component {
     const params = { contract, method, parameters, gasPrice, gasLimit }
     const res = await this.scInvoke(params, false);
     console.log(res);
+    this.setState({open: false});
   }
 
   scInvoke = async(params, preExec) => {
@@ -116,6 +117,31 @@ class InputPage extends Component {
     console.log(identity.ontid);
   }
 
+  /*
+  createTransactionDid = async() => {
+    const { privateKey, did, account, didPrivateKey } = this.state;
+
+    const pk = didPrivateKey.getPublicKey();
+    const gasPrice = '550';
+    const gasLimit = '20000';
+
+    const tx = OntidContract.buildRegisterOntidTx(did, pk, gasPrice, gasLimit);
+    tx.payer = account.address;
+    TransactionBuilder.signTransaction(tx, didPrivateKey);
+
+    const pri = privateKey;
+    TransactionBuilder.addSign(tx, pri)
+    console.log(tx);
+
+    const rest = new RestClient();
+    rest.sendRawTransaction(tx.serialize(), false).then(res => {
+      console.log(res);
+    })
+
+    this.setState({ tx });
+  }
+  */
+
 
   /*
   handleFile = e => {
@@ -144,7 +170,7 @@ class InputPage extends Component {
       <Row className="center-align">
           <div className="col s8 offset-s2">
             <Col s={12}>
-              <h2>卒業証明登録</h2>
+              <h2>学生証</h2>
             </Col>
             <Col s={12}>
               <Input type="text" value={handlePassword} onChange={this.handlePassword} label="password" s={12} />
