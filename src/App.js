@@ -16,7 +16,7 @@ class App extends Component {
     this.state = {
       provider: '', wallet: null,
       account: null, address: '', privateKey: null, password: '',
-      did: null, tx: null
+      did: null, didPrivateKey: null, tx: null
     };
   }
 
@@ -53,31 +53,32 @@ class App extends Component {
 
   addAccount = async() => {
     const { account, wallet } = this.state;
-    console.log(account.getB58Checksum());
+    console.log(account);
     wallet.addAccount(account);
     console.log(wallet);
   }
 
   generatedid = async() => {
-    const { privateKey, password } = this.state;
-    const label = 'age';
+    const label = 'name';
+    const privateKey = Crypto.PrivateKey.random();
+    const password = 'bbb';
 
     let identity = Identity.create(privateKey, password, label);
 
-    this.setState({ did: identity.ontid });
+    this.setState({ did: identity.ontid, didPrivateKey: privateKey });
     console.log(identity.ontid);
   }
 
   createTransactionDid = async() => {
-    const { privateKey, did, account } = this.state;
+    const { privateKey, did, account, didPrivateKey } = this.state;
 
-    const pk = privateKey.getPublicKey();
+    const pk = didPrivateKey.getPublicKey();
     const gasPrice = '550';
     const gasLimit = '20000';
 
     const tx = OntidContract.buildRegisterOntidTx(did, pk, gasPrice, gasLimit);
     tx.payer = account.address;
-    TransactionBuilder.signTransaction(tx, privateKey);
+    TransactionBuilder.signTransaction(tx, didPrivateKey);
 
     const pri = privateKey;
     TransactionBuilder.addSign(tx, pri)
