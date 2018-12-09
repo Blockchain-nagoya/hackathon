@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 import App from './App';
 import UserTop from './Components/UserTop';
-import Input from './Components/Input';
+import InputPage from './Components/Input';
 import Request from './Components/Request';
 
 const Root = () => (
@@ -14,7 +14,7 @@ const Root = () => (
     <div>
       <Route exact path="/" component={App} />
       <Route path="/UserTop" component={UserTop} />
-      <Route path="/Input" component={Input} />
+      <Route path="/Input" component={InputPage} />
       <Route path="/request" component={Request} />
     </div>
   </BrowserRouter>

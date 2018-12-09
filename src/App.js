@@ -5,7 +5,7 @@ import { client } from 'ontology-dapi';
 
 import {
   Crypto, Account, Identity, OntidContract, TransactionBuilder,
-  RestClient, CONST, Wallet, Utils
+  RestClient, CONST, Wallet, Utils, Parameter, ParameterType
 } from 'ontology-ts-sdk';
 
 import UserTop from './Components/UserTop';
@@ -16,7 +16,7 @@ class App extends Component {
     this.state = {
       provider: '', wallet: null,
       account: null, address: '', privateKey: null, password: '',
-      did: null, didPrivateKey: null, tx: null
+      did: '', didPrivateKey: null, tx: null
     };
   }
 
@@ -55,11 +55,65 @@ class App extends Component {
 
   
     this.setState({
-      account, privateKey, password, address, wallet
+      account, privateKey, password, address, wallet,
+      contract: contractHash
     });
+
+
     this.addAccount = this.addAccount.bind(this);
     this.generatedid = this.generatedid.bind(this);
     this.createTransactionDid = this.createTransactionDid.bind(this);
+    this.putInfoOf = this.putInfoOf.bind(this);
+  }
+
+  init = async() => {
+    const contract = 'f4c029de0779ca64e53646dfb5d3fe1771881d96';
+    const method = 'init';
+    const parameters = [];
+    const gasPrice = '550';
+    const gasLimit = '21000';
+
+    const params = {
+      contract,
+      method,
+      parameters,
+      gasPrice,
+      gasLimit
+    }
+    const res = await this.scInvoke(params, false);
+    console.log(res);
+  }
+
+  putInfoOf = async() => {
+    const { contract, account, did } = this.state;
+    const method = 'PutInfoOf';
+    const accounts = new Crypto.Address(account.address.toBase58());
+    const parameters = [
+      new Parameter('account', ParameterType.ByteArray, accounts.serialize()),
+      new Parameter('did', ParameterType.String, did)
+    ];
+    const gasPrice = '550';
+    const gasLimit = '30000';
+
+    const params = { contract, method, parameters, gasPrice, gasLimit }
+    const res = await this.scInvoke(params, false);
+    console.log(res);
+  }
+
+  scInvoke = async(params, preExec) => {
+    try {
+      let result;
+      if(preExec) {
+         result = await client.api.smartContract.invokeRead(params);       
+      } else {
+         result = await client.api.smartContract.invoke(params);
+      }
+      console.log('onScCall finished, result:' + JSON.stringify(result));        
+      return result;
+    } catch (e) {
+      console.log('onScCall error:', e);
+      return null;
+    }
   }
 
   addAccount = async() => {
@@ -105,17 +159,11 @@ class App extends Component {
   }
   // created did:ont:AVhDg6z4umV4u8U6wa7D8jDQ745LLt9LfB
 
-  get = async() => {
-    const { did } = this.state;
-    const tx = await OntidContract.buildGetDDOTx(did);
-    console.log(tx);
-  }
-
 
   render() {
     const { address } = this.state;
     return (
-      <div className="App">
+      <div className="App container">
         <p>address</p>
         <p>{this.state.address}</p>
         <button onClick={this.addAccount}>addAccount</button>
@@ -124,17 +172,19 @@ class App extends Component {
         <button onClick={this.sendTransacrionDid}>sendTD</button>
         <button onClick={this.get}>get</button>
 
-        <UserTop />
+        <button onClick={this.putInfoOf}>touroku</button>
+
+        <UserTop address={address} />
       </div>
     );
   }
 }
-
 export default App;
 
-
-// address: AVhDg6z4umV4u8U6wa7D8jDQ745LLt9LfB //Address (little endian)
-// privateKey: c9574d40a5f81d00e792f0a6c9198474b7b11a7ba6e83f4b9d53f38576e457dc
-// Wif : L3y6G87B4bURtBC5d8yNd3pquaPzH2ATKmTMJruhncQBVBg6qZjj
-// password : aaa 
-// publicKey : 02192434e0b56d503a6d79b38187c3e0c7d7c7f206fda9179bfc4b5590d9c2c426
+/*
+  address: AVhDg6z4umV4u8U6wa7D8jDQ745LLt9LfB //Address (little endian)
+  privateKey: c9574d40a5f81d00e792f0a6c9198474b7b11a7ba6e83f4b9d53f38576e457dc
+  Wif : L3y6G87B4bURtBC5d8yNd3pquaPzH2ATKmTMJruhncQBVBg6qZjj
+  password : aaa 
+  publicKey : 02192434e0b56d503a6d79b38187c3e0c7d7c7f206fda9179bfc4b5590d9c2c426
+*/

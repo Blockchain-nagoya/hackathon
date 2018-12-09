@@ -1,22 +1,29 @@
 import React, { Component } from "react";
 
-import {Tabs, Tab} from 'react-materialize';
+import {Row, Col} from 'react-materialize';
 
 class UserTop extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      
+      type: 'student'
     }
   }
-  render() {
+
+  render(props) {
     return (
-      <div className="top">
-        <Tabs className='tab-demo z-depth-1'>
-          <Tab title="Main" active>main</Tab>
-          <Tab title="data">inputMyData</Tab>
-        </Tabs>
-      </div>
+      <Row className="top center-align">
+        <Col s={12}>
+          <h2>Mypage</h2>
+        </Col>
+        <Col s={12}>
+          <p>ADDRESS</p>
+          <p>{this.props.address}</p>
+        </Col>
+        <Col s={12}>
+          <p>{this.state.type}</p>
+        </Col>
+      </Row>
     );
   }
 }
